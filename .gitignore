@@ -44,5 +44,4 @@ captures/
 *.rar
 
 ### Gradle ###
-!gradle/wrapper/gradle-wrapper.jar
-# Project exclude paths
+!gradle/wrapper/gradle-wrapper.j
