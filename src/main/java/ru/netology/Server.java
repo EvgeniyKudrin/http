@@ -39,7 +39,6 @@ public class Server {
     public Server() {
         System.out.println("Server started");
     }
-
     public void listen(int port) {
         try (final var serverSocket = new ServerSocket(port)) {
             while (true) {
