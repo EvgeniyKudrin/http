@@ -28,7 +28,6 @@ public class Main {
                 responseStream.flush();
             });
         }
-
         server.addHandler("GET", "/classic.html", (request, responseStream) -> {
             final var filePath = Path.of(".", "public", request.getPath());
             final var mimeType = Files.probeContentType(filePath);
