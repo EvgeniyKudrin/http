@@ -13,7 +13,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    private final ExecutorService service = Executors.newFixedThreadPool(64);
+    final static Handler handlerBadRequest = (request, responseStream) -> {
+        System.out.println("handler bad request");
+        responseStream.write((
+                "HTTP/1.1 400 Bad request\r\n" +
+                        "Content-Length: 0\r\n" +
+                        "Connection: close\r\n" +
+                        "\r\n"
+        ).getBytes());
+        responseStream.flush();
+    };
     static ConcurrentMap<String, HashMap<String, Handler>> handlers = new ConcurrentHashMap<>();
     final Handler handlerNotFound = (request, responseStream) -> {
         System.out.println("handler not found");
@@ -25,16 +34,7 @@ public class Server {
         ).getBytes());
         responseStream.flush();
     };
-    final static Handler handlerBadRequest = (request, responseStream) -> {
-        System.out.println("handler bad request");
-        responseStream.write((
-                "HTTP/1.1 400 Bad request\r\n" +
-                        "Content-Length: 0\r\n" +
-                        "Connection: close\r\n" +
-                        "\r\n"
-        ).getBytes());
-        responseStream.flush();
-    };
+    private final ExecutorService service = Executors.newFixedThreadPool(64);
 
     public Server() {
         System.out.println("Server started");
@@ -58,19 +58,18 @@ public class Server {
     }
 
     private class connection implements Runnable {
+        private final HashMap<String, Handler> mapBadRequest = new HashMap<>();
         public Socket socket;
 
         public connection(Socket socket) {
             this.socket = socket;
         }
 
-        private final HashMap<String, Handler> mapBadRequest = new HashMap<>();
-
         @Override
         public void run() {
             try (
                     final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    final var out = new BufferedOutputStream(socket.getOutputStream());
+                    final var out = new BufferedOutputStream(socket.getOutputStream())
             ) {
                 while (true) {
                     Request request = new Request(in.readLine());

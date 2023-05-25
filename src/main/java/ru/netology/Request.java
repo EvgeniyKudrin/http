@@ -3,9 +3,9 @@ package ru.netology;
 import java.io.IOException;
 
 public class Request {
-    private String method;
-    private String path;
-    private String ver;
+    private final String method;
+    private final String path;
+    private final String ver;
 
     public Request(String requestLine) throws IOException {
         final var parts = requestLine.split(" ");
